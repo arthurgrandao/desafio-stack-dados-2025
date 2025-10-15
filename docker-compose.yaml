@@ -9,11 +9,32 @@ services:
     volumes:
       - ./postgres:/docker-entrypoint-initdb.d
       - psqldata:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    networks:
+      - app
 
-    # airflow:
-    # superset:
+  airflow:
+    # build:
+    #   context: ./airflow
+    #   dockerfile: ./Dockerfile
+    image: apache/airflow:3.1.0-python3.13
+    container_name: airflow
+    env_file: .env
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    command: ["standalone"]
+    networks:
+      - app
+  # superset:
 
 volumes:
   psqldata:
+
+networks:
+  app:
+    driver: bridge
