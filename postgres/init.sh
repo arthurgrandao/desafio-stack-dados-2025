@@ -24,6 +24,9 @@ echo -e "${YELLOW}Criando usuários...${NC}"
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
     CREATE USER $AIRFLOW_PSQL_USER WITH PASSWORD '$AIRFLOW_PSQL_PASS';
     CREATE USER $SUPERSET_PSQL_USER WITH PASSWORD '$SUPERSET_PSQL_PASS';
+
+    ALTER USER $AIRFLOW_PSQL_USER SET search_path TO airflow, public;
+    ALTER USER $SUPERSET_PSQL_USER SET search_path TO superset, public;
 EOSQL
 echo -e "${GREEN}✓ Usuários criados${NC}"
 
