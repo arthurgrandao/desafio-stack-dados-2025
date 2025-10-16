@@ -1,9 +1,9 @@
 services:
   postgres:
-    # build:
-    #   context: ./postgres
-    #   dockerfile: ./Dockerfile
-    image: postgres:latest
+    build:
+      context: ./postgres
+      dockerfile: ./Dockerfile
+    # image: postgres:latest
     container_name: postgres
     env_file: .env
     volumes:
