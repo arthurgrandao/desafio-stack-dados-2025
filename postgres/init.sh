@@ -34,7 +34,7 @@ echo -e "${GREEN}✓ Usuários criados${NC}"
 declare -A bancos_schemas=(
     ["airflow_meta"]="airflow"
     ["superset_meta"]="superset"
-    ["analytics"]="analytics"
+    ["analytics"]="public"
 )
 
 for db in "${!bancos_schemas[@]}"; do
@@ -86,29 +86,34 @@ EOSQL
 
 # Banco analytics compartilhado
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "analytics" <<-EOSQL
-    -- Dar CONNECT ao banco
-    GRANT CONNECT ON DATABASE analytics TO $AIRFLOW_PSQL_USER;
-    GRANT CONNECT ON DATABASE analytics TO $SUPERSET_PSQL_USER;
+    -- Permitir acesso ao banco
+    GRANT CONNECT ON DATABASE analytics TO $AIRFLOW_PSQL_USER, $SUPERSET_PSQL_USER;
 
-    -- Schema default (public)
+    -- Permissões de schema
     GRANT USAGE, CREATE ON SCHEMA public TO $AIRFLOW_PSQL_USER;
-    GRANT USAGE, CREATE ON SCHEMA public TO $SUPERSET_PSQL_USER;
+    GRANT USAGE ON SCHEMA public TO $SUPERSET_PSQL_USER;
 
-    -- Objetos existentes
+    -- Permitir que airflow crie objetos
+    ALTER SCHEMA public OWNER TO $AIRFLOW_PSQL_USER;
+
+    -- Permitir leitura para Superset em todas as tabelas existentes
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO $SUPERSET_PSQL_USER;
+    GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO $SUPERSET_PSQL_USER;
+
+    -- Permitir total controle para airflow
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $AIRFLOW_PSQL_USER;
-    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $SUPERSET_PSQL_USER;
     GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $AIRFLOW_PSQL_USER;
-    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $SUPERSET_PSQL_USER;
 
-    -- DEFAULT PRIVILEGES
-    ALTER DEFAULT PRIVILEGES FOR ROLE $POSTGRES_USER IN SCHEMA public
+    -- Garantir privilégios futuros
+    ALTER DEFAULT PRIVILEGES FOR ROLE $AIRFLOW_PSQL_USER IN SCHEMA public
         GRANT ALL ON TABLES TO $AIRFLOW_PSQL_USER;
-    ALTER DEFAULT PRIVILEGES FOR ROLE $POSTGRES_USER IN SCHEMA public
-        GRANT ALL ON TABLES TO $SUPERSET_PSQL_USER;
-    ALTER DEFAULT PRIVILEGES FOR ROLE $POSTGRES_USER IN SCHEMA public
+    ALTER DEFAULT PRIVILEGES FOR ROLE $AIRFLOW_PSQL_USER IN SCHEMA public
+        GRANT SELECT ON TABLES TO $SUPERSET_PSQL_USER;
+    ALTER DEFAULT PRIVILEGES FOR ROLE $AIRFLOW_PSQL_USER IN SCHEMA public
         GRANT ALL ON SEQUENCES TO $AIRFLOW_PSQL_USER;
-    ALTER DEFAULT PRIVILEGES FOR ROLE $POSTGRES_USER IN SCHEMA public
-        GRANT ALL ON SEQUENCES TO $SUPERSET_PSQL_USER;
+    ALTER DEFAULT PRIVILEGES FOR ROLE $AIRFLOW_PSQL_USER IN SCHEMA public
+        GRANT SELECT ON SEQUENCES TO $SUPERSET_PSQL_USER;
+
 EOSQL
 
 echo -e "${GREEN}========================================${NC}"
@@ -117,3 +122,4 @@ echo -e "${GREEN}========================================${NC}"
 echo ""
 
 exec "$@"
+

@@ -3,7 +3,6 @@ services:
     build:
       context: ./postgres
       dockerfile: ./Dockerfile
-    # image: postgres:latest
     container_name: postgres
     env_file: .env
     volumes:
@@ -11,16 +10,19 @@ services:
       - psqldata:/var/lib/postgresql/data
     networks:
       - app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   airflow:
-    # build:
-    #   context: ./airflow
-    #   dockerfile: ./Dockerfile
     image: apache/airflow:3.1.0-python3.13
     container_name: airflow
     env_file: .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     volumes:
@@ -30,7 +32,20 @@ services:
     command: ["standalone"]
     networks:
       - app
-  # superset:
+
+  superset:
+    build:
+      context: ./superset
+      dockerfile: ./Dockerfile
+    container_name: superset
+    env_file: .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8088:8088"
+    networks:
+      - app
 
 volumes:
   psqldata:
