@@ -16,7 +16,7 @@ Este repositório apresenta a solução para o Desafio Stack Dados 2025, que con
     <p>Diagrama de arquitetura simplificado</p>
 </div>
 
-Para rodar o projeto, tendo o Docker instalado na máquina, rode:
+Para rodar o projeto, tendo o Docker instalado na máquina e tendo preenchido o arquivo *.env*, rode:
 ```sh
 docker compose up
 ```
@@ -64,7 +64,7 @@ Abaixo encontra-se um GIF mostrando uma validação na qual demonstra que as bas
 
 ## Airflow
 
-O Airflow está rodando em um contêiner e inicializado com o comando `standalone`, que inicia todos os componentes do Airflow e configura o banco de dados. É importante notar que esse método só é indicado para ambientes de desenvolvimento. Foi feito um bind de diretórios locais para dags, logs e plugins com os do contêiner. Dentro do diretório *airflow/dags*, deixei um DAG de exemplo que grava um número aleatório, e a data atual na base *anlytics* do Postgres. Os DAGs presentes no diretório local são carregados automaticamente na aplicação.
+O Airflow está rodando em um contêiner e inicializado com o comando `standalone`, que inicia todos os componentes do Airflow e configura o banco de dados. É importante notar que esse método só é indicado para ambientes de desenvolvimento. Foi feito um bind de diretórios locais para dags, logs e plugins com os do contêiner. Dentro do diretório *airflow/dags*, deixei um DAG de exemplo que grava um número aleatório e a data atual na base *anlytics* do Postgres. Os DAGs presentes no diretório local são carregados automaticamente na aplicação.
 
 A configuração do Airflow se deu somente por meio de variáveis de ambiente. A seguir estão as variáveis utilizadas, bem como a sua função no sistema:
 
