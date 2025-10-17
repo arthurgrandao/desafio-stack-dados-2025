@@ -16,6 +16,15 @@ Este repositório apresenta a solução para o Desafio Stack Dados 2025, que con
     <p>Diagrama de arquitetura simplificado</p>
 </div>
 
+Para rodar o projeto, tendo o Docker instalado na máquina, rode:
+```sh
+docker compose up
+```
+Por padrão os serviços se encontrarão em:
+
+- Airflow: [localhost:8080](http://localhost:8080)
+- Superset: [localhost:8088](http://localhost:8088)
+
 
 ## Postgres
 
@@ -88,21 +97,23 @@ Abaixo encontram-se prints da interface do Airflow funcionando.
 
 ### Teste de conexão
 
+Apesar de a conexão com o banco funcionar adequadamente e ser possível comprovar de outras maneiras, eu não consegui comprovar por meio do teste de conexão via UI do Airflow, como pedia o desafio.
+
+Como foi citado anteriormente, a conexão padrão indicada na variável de ambiente, apesar de funcional, não é reconhecida na página de conexões (Home -> Admin -> Connections). Portanto, para fazer o teste, rodei a aplicação sem informar a variável no *.env* (para garantir) e criei pela interface a conexão seguindo os mesmos parâmetros. Abaixo está a conexão criada:
+
 <div align="center">
     <img src="./docs/img/print_teste_conexao_ui_airflow.png">
     <p>Página das conexões</p>
 </div>
 
-Apesar de a conexão com o banco funcionar adequadamente e ser possível comprovar de outras maneiras, eu não consegui comprovar por meio do teste de conexão via UI do Airflow, como pedia o desafio.
-
-Ao clicar no botão de Teste de Conexão, nada acontecia na interface, e o Postgres apresentava isso no log, mesmo as credenciais estando corretas e os DAGs conseguirem utilizá-la:
+Ao clicar no botão de Teste de Conexão, nada acontecia na interface, e o Postgres apresentava a mensagem disposta abaixo no log, mesmo as credenciais estando corretas e os DAGs conseguirem utilizá-la, como evidencia o print da página de DAGs.
 
 ```sh
 postgres  | 2025-10-16 21:48:06.579 UTC [2266] FATAL:  password authentication failed for user "airflow_user"
 postgres  | 2025-10-16 21:48:06.579 UTC [2266] DETAIL:  Connection matched file "/var/lib/postgresql/18/docker/pg_hba.conf" line 128: "host all all all scram-sha-256"
 ```
 
-Entretanto, ao fazer o teste de conexão via CLI, dentro do contêiner do Airflow e com a mesma conexão, o teste era bem-sucedido. Abaixo há um print mostrando a sua realização.
+Entretanto, ao fazer o teste de conexão via CLI, dentro do contêiner do Airflow e com a mesma conexão, o teste era bem-sucedido. Abaixo há um print mostrando a sua realização:
 
 <div align="center">
     <img src="./docs/img/print_teste_conexao_airflow.png" width=800 >
@@ -166,7 +177,7 @@ Abaixo encontra-se um print de um dashboard que eu fiz utilizando os dados gerad
 
 ### Teste de conexão
 
-O teste de conexão do Superset foi realizado sem problemas.
+O teste de conexão do Superset foi realizado sem problemas. Para realizá-lo navegue até a página Databse Connections (Settings -> Database Connections) e clique para editar a conexão que está (deve) lá, em seguida clique em "Test Connection" e veja o resultado.
 
 Abaixo encontra-se um print do teste de conexão via UI do Superset:
 
@@ -183,6 +194,5 @@ Abaixo encontra-se um print do teste de conexão via UI do Superset:
 - Repositório oficial do Superset, disponível em: [https://github.com/apache/superset](https://github.com/apache/superset)
 
 ---
-<br>
 
 [⬆️ Voltar ao topo](#desafio-stack-dados-2025)
