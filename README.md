@@ -11,6 +11,12 @@
 
 Este repositório apresenta a solução para o Desafio Stack Dados 2025, que consiste em criar um ambiente integrado de análise de dados usando Docker. O projeto utiliza PostgreSQL para armazenamento, Apache Airflow para automação de processos e Apache Superset para visualização de dados em dashboards.
 
+<div align="center">
+    <img src="./docs/img/diagrama.png" width=400 >
+    <p>Diagrama de arquitetura simplificado</p>
+</div>
+
+
 ## Postgres
 
 A configuração do banco de dados foi feita por meio de uma imagem extendida do postgres na qual passamos um script *.sh* como entrypoint para o contêiner. O scipt contêm instruções para a criação das bases a serem utilizadas, a criação dos usuários para os respectivos serviços e o plano de controle de acesso ao banco. 
